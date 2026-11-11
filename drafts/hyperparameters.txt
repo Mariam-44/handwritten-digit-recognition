@@ -1,0 +1,29 @@
+def tune_hyperparameters(X, y):
+
+    best_f1 = -1
+    best_params = None
+    best_result = None
+    
+    learning_rate = [0.01, 0.1, 0.001,0.03, 0.3]
+    epochs = [500, 1000]
+    tol = [0.00001,0.001, 0.0001]
+    l2= [0.0, 0.1, 0.1]
+    
+    for lr, epochs, tol, l2 in product(learning_rate, epochs, tol, l2):
+        params = {
+            "learning_rate": lr,
+            "epochs": epochs,
+            "tol": tol,
+            "l2_lambda": l2
+        }
+        
+        kfold_result = kfold_cross_validation(X, y, params)
+        
+        if kfold_result["f1_mean"] > best_f1:
+            best_f1 = kfold_result["f1_mean"]
+            best_params = params
+            best_result = kfold_result
+            print(f"New best F1: {best_f1:.4f} | LR={lr}, Epochs={epochs}, Tol={tol}, L2={l2}")
+    
+
+    return best_params, best_result

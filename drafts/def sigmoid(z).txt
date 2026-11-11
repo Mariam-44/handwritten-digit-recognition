@@ -1,0 +1,44 @@
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+def train_ova_logreg(X, y, num_classes=10, alpha=best_c, tol=best_tol, max_iter=10000, batch_size=100):
+
+    m, n = X.shape
+    thetas = np.zeros((num_classes, n))  # كل صف θ لفئة واحدة
+  
+    for c in range(num_classes):  # loop over each class (numbers 0-9)
+        y_bin = (y == c).astype(np.float32)
+        theta = np.zeros(n)
+        
+        for iteration in range(max_iter):
+  
+            indices = np.arange(m)
+            np.random.shuffle(indices)
+            X_shuffled = X[indices]
+            y_shuffled = y_bin[indices]
+            
+            # Mini-Batch loop
+            for start in range(0, m, batch_size):
+                end = start + batch_size
+                X_batch = X_shuffled[start:end]
+                y_batch = y_shuffled[start:end]
+                
+                z = X_batch.dot(theta)
+                h = sigmoid(z)
+                
+                gradient = (1 / X_batch.shape[0]) * X_batch.T.dot(h - y_batch)
+                theta_new = theta - alpha * gradient
+                
+                # Check convergence لكل batch
+                if np.linalg.norm(theta_new - theta, ord=1) < tol:
+                    break
+                
+                theta = theta_new
+                
+        thetas[c] = theta
+    return thetas
+
+def predict_ova_logreg(thetas, X):
+    z = X.dot(thetas.T)  # shape (num_samples, num_classes)
+    h = sigmoid(z)
+    return np.argmax(h, axis=1)

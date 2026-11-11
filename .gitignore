@@ -1,0 +1,5 @@
+# course material, not part of the project
+Artificial Intelligence.pdf
+*.joblib
+.ipynb_checkpoints/
+__pycache__/
